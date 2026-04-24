@@ -2,6 +2,8 @@ import uproot
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use("Agg")
 import re
 
 # Gaussian model
@@ -121,8 +123,9 @@ for fname in files:
     plt.legend()
 
     # Save plot
-    outname = f"fit_output/fit_m{m}_T{T}.png"
-    plt.savefig(outname)
+    outname = f"fit_output/fit_m{m:.1f}_T{T:.2f}.png"
+    plt.savefig(outname)  # png
+    plt.savefig(outname.replace(".png", ".pdf"))  # pdf
     plt.clf()
 
 # Convert to arrays
@@ -139,6 +142,7 @@ plt.xlabel("Temperature T")
 plt.ylabel("Mean μ")
 plt.title("μ vs T (m=1)")
 plt.savefig("fit_output/mu_vs_T.png")
+plt.savefig("fit_output/mu_vs_T.pdf")
 plt.clf()
 
 # σ vs T (fixed m ≈ 1) 
@@ -147,6 +151,7 @@ plt.xlabel("Temperature T")
 plt.ylabel("Sigma σ")
 plt.title("σ vs T (m=1)")
 plt.savefig("fit_output/sigma_vs_T.png")
+plt.savefig("fit_output/sigma_vs_T.pdf")
 plt.clf()
 
 # μ vs m (fixed T ≈ 4)
@@ -157,6 +162,7 @@ plt.xlabel("Mass m")
 plt.ylabel("Mean μ")
 plt.title("μ vs m (T=4)")
 plt.savefig("fit_output/mu_vs_m.png")
+plt.savefig("fit_output/mu_vs_m.pdf")
 plt.clf()
 
 # σ vs m (fixed T ≈ 4)
@@ -165,6 +171,7 @@ plt.xlabel("Mass m")
 plt.ylabel("Sigma σ")
 plt.title("σ vs m (T=4)")
 plt.savefig("fit_output/sigma_vs_m.png")
+plt.savefig("fit_output/sigma_vs_m.pdf")
 plt.clf()
 
 # Filter for T/m fit -- m=4 for now
@@ -186,13 +193,14 @@ plt.ylabel("Mean μ")
 plt.title("μ vs log2(T/m) (m=4)")
 plt.legend()
 plt.savefig("fit_output/mu_vs_log2T_over_m_m4.png")
+plt.savefig("fit_output/mu_vs_log2T_over_m_m4.pdf")
 plt.clf()
 
 # σ vs log2(T/m) -- m=4
 #plt.scatter(log2_T_over_m, sigma_m4, label="data")
 #popt, _ = curve_fit(sigma_quad, T_m4, sigma_m4)
-#popt, _ = curve_fit(sigma_model, T_m4, sigma_m4, p0=[1.0, np.mean(T_m4), 1.0, np.min(sigma_m4)])
-#T_fit = np.linspace(min(T_m4), max(T_m4), 200)
+popt_gauss, _ = curve_fit(sigma_model, T_m4, sigma_m4, p0=[1.0, np.mean(T_m4), 1.0, np.min(sigma_m4)])
+T_fit = np.linspace(min(T_m4), max(T_m4), 200)
 #log2_fit = np.log2(T_fit / 4.0)
 #plt.plot(log2_fit, sigma_quad(T_fit, *popt), color="red", label="quadratic fit")
 #plt.xlabel("log2(T/m)")
@@ -200,19 +208,20 @@ plt.clf()
 #plt.title("σ vs log2(T/m) (m=4)")
 #plt.legend()
 #plt.savefig("fit_output/sigma_vs_log2T_over_m_m4.png")
+#plt.savefig("fit_output/sigma_vs_log2T_over_m_m4.pdf")
 #plt.clf()
 
-#plt.scatter(T_m4, sigma_m4, label="data")
-#plt.plot(T_fit, sigma_model(T_fit, *popt),
-#         color="red", label="Gaussian fit")
-#
-#plt.xlabel("T")
-#plt.ylabel("σ")
-#plt.title("σ vs T (Gaussian fit)")
-#plt.legend()
-#
-#plt.savefig("fit_output/sigma_fit_gauss.png")
-#plt.clf()
+plt.scatter(T_m4, sigma_m4, label="data")
+plt.plot(T_fit, sigma_model(T_fit, *popt_gauss), color="red", label="Gaussian fit")
+
+plt.xlabel("T")
+plt.ylabel("σ")
+plt.title("σ vs T (Gaussian fit)")
+plt.legend()
+
+plt.savefig("fit_output/sigma_fit_gauss.png")
+plt.savefig("fit_output/sigma_fit_gauss.pdf")
+plt.clf()
 
 plt.scatter(log2_T_over_m, sigma_m4, label="data")
 
@@ -223,7 +232,7 @@ popt_sigma, _ = curve_fit(
     p0=[1.0, np.mean(T_m4), 1.0, np.min(sigma_m4)]
 )
 
-T_fit = np.linspace(min(T_m4), max(T_m4), 200)
+#T_fit = np.linspace(min(T_m4), max(T_m4), 200)
 log2_fit = np.log2(T_fit / 4.0)
 
 plt.plot(log2_fit,
@@ -237,6 +246,7 @@ plt.title("σ vs log2(T/m) (m=4)")
 plt.legend()
 
 plt.savefig("fit_output/sigma_vs_log2T_over_m_m4.png")
+plt.savefig("fit_output/sigma_vs_log2T_over_m_m4.pdf")
 plt.clf()
 
 # σ vs μ (colored by log2(T/m)) -- m=4
@@ -246,4 +256,5 @@ plt.xlabel("μ")
 plt.ylabel("σ")
 plt.title("σ vs μ (m=4 only)")
 plt.savefig("fit_output/sigma_vs_mu_m4.png")
+plt.savefig("fit_output/sigma_vs_mu_m4.pdf")
 plt.clf()
