@@ -35,38 +35,31 @@ def MasslessInvMass(events):
 
 def GenSphericity(events):
     cut = (events["GenPart_pdgId"]==999999)
-    # Only the dark mesons
     pt   = events["GenPart_pt"][cut]
     eta  = events["GenPart_eta"][cut]
     phi  = events["GenPart_phi"][cut]
-    # Convert to euclidean
     px = pt*np.cos(phi)
     py = pt*np.sin(phi)
     pz = pt*np.sinh(eta)
     p  = pt*np.cosh(eta)
+    r = 2
 
-    # Sphericity magic
-    r    = 2
-    norm = np.squeeze(ak.sum(p ** r, axis=1, keepdims=True))
-    s = np.array([[
-                       ak.sum(px*px * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                       ak.sum(px*py * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                       ak.sum(px*pz * p ** (r-2.0), axis=1 ,keepdims=True)/norm
-                      ],
-                      [
-                       ak.sum(py*px * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                       ak.sum(py*py * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                       ak.sum(py*pz * p ** (r-2.0), axis=1 ,keepdims=True)/norm
-                      ],
-                      [
-                       ak.sum(pz*px * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                       ak.sum(pz*py * p ** (r-2.0), axis=1 ,keepdims=True)/norm,
-                       ak.sum(pz*pz * p ** (r-2.0), axis=1 ,keepdims=True)/norm
-                       ]])
-    s = np.squeeze(np.moveaxis(s, 2, 0),axis=3)
-    s = np.nan_to_num(s, copy=False, nan=1., posinf=1., neginf=1.) 
-    evals = np.sort(np.linalg.eigvals(s))
-    return np.real(1.5*(evals[:,0] + evals[:,1]))
+    norm = ak.to_numpy(ak.sum(p ** r, axis=1))
+    def comp(a, b):
+        return ak.to_numpy(ak.sum(a*b * p ** (r-2.0), axis=1)) / norm
+
+    sxx, sxy, sxz = comp(px, px), comp(px, py), comp(px, pz)
+    syy, syz, szz = comp(py, py), comp(py, pz), comp(pz, pz)
+
+    N = len(norm)
+    s = np.zeros((N, 3, 3))
+    s[:, 0, 0], s[:, 0, 1], s[:, 0, 2] = sxx, sxy, sxz
+    s[:, 1, 0], s[:, 1, 1], s[:, 1, 2] = sxy, syy, syz
+    s[:, 2, 0], s[:, 2, 1], s[:, 2, 2] = sxz, syz, szz
+
+    s = np.nan_to_num(s, copy=False, nan=1., posinf=1., neginf=1.)
+    evals = np.sort(np.linalg.eigvalsh(s), axis=1)
+    return 1.5 * (evals[:, 0] + evals[:, 1])
 
 # Define plots to do, one entry means one comparison plot
 # Note that if we use more variables they need to be added to the "variables" list below (this is a trick to not load the whole set of variables in the files)
@@ -100,15 +93,15 @@ allPlots = {
 #                    }
 #                ),
 #
-#    "GenSphericity": Plot(
-#                    name  = "GenSphericity",
-#                    var   = GenSphericity,
-#                    bins  = np.arange(0,1.05, 0.05),
-#                    extra= {
-#                        "is2D"   : False,
-#                        "xlabel" : "S_{#Phi}^{r=2}"
-#                    }
-#                ), # This crashes due to lack of memory...
+    "GenSphericity": Plot(
+                    name  = "GenSphericity",
+                    var   = GenSphericity,
+                    bins  = np.arange(0,1.05, 0.05),
+                    extra= {
+                        "is2D"   : False,
+                        "xlabel" : "S_{#Phi}^{r=2}"
+                    }
+                ), 
 #    "MeanPhiPt": Plot(
 #                    name = "MeanPhiPt",
 #                    var  = MeanPhiPt,

@@ -216,7 +216,10 @@ class Plotter1D(object):
                 histos[newtag].SetDirectory(0)
                 histos[newtag].SetLineColor(sample.weighted_color)
                 histos[newtag].SetFillColor(0)
-                histos[newtag].Scale(1./histos[newtag].Integral())
+                #histos[newtag].Scale(1./histos[newtag].Integral())
+                integral = histos[newtag].Integral()
+                if integral != 0:
+                    histos[newtag].Scale(1./integral)
 
 
         for tag in sampletags:
