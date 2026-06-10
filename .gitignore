@@ -2,3 +2,5 @@
 *.pdf
 *.root
 *.pyc
+*.txt
+*.npz

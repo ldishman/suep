@@ -196,7 +196,11 @@ class Plotter1D(object):
         p1.Draw()
         p2.Draw()
         p1.cd()
-        tl = ROOT.TLegend(0.6,0.6, 0.9, 0.9)
+        #tl = ROOT.TLegend(0.6,0.6, 0.9, 0.9)
+        tl = ROOT.TLegend(0.58, 0.74, 0.9, 0.89)   # shorter box -> entries packed closer
+        tl.SetTextSize(0.028)
+        tl.SetBorderSize(0)
+        tl.SetFillStyle(0)                          # transparent -> curves show through
         histos = {}
         first = True
         sampletags = []
@@ -209,7 +213,7 @@ class Plotter1D(object):
             histos[sample.tag ].SetFillColor(0)
             histos[sample.tag ].Scale(1./histos[sample.tag].Integral())
             if sample.weightFunction:
-                newtag = "Weighted %s"%sample.tag 
+                newtag = "Weighted %s"%sample.tag.split(" (")[0]   # "Weighted Mix (Leptonic)" -> "Weighted Mix"
                 sampletags.append(newtag)
                 sample.collectHistogram(cfg, True)
                 histos[newtag] = sample.weighted_histos[cfg.name].Clone(cfg.name + "_" + sample.tag + "weighted_total")
@@ -239,7 +243,8 @@ class Plotter1D(object):
             ratios[tag] = histos[tag].Clone(histos[tag].GetName() + "_ratio")
             #ratios[tag].SetLineColor()
             ratios[tag].Divide(histos[sampletags[0]])
-            ratios[tag].SetTitle(";%s;X/%s"%(cfg.xlabel, sampletags[0]))
+            #ratios[tag].SetTitle(";%s;X/%s"%(cfg.xlabel, sampletags[0]))
+            ratios[tag].SetTitle(";%s;X / Target"%cfg.xlabel)
             ratios[tag].SetMaximum(2)
             ratios[tag].SetMinimum(0)
             ratios[tag].GetXaxis().SetTitleSize(0.16)

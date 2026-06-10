@@ -34,8 +34,9 @@ for fname in mix_files:
         continue
 
     values, edges = file[hname].to_numpy()
-    centers = 0.5 * (edges[:-1] + edges[1:])
-    plt.step(centers, values, where="mid", label=f"m={m}, T={T:.2f}")
+    #centers = 0.5 * (edges[:-1] + edges[1:])
+    centers = edges[:-1]    # numpy.ndarray
+    plt.step(centers, values, where="mid", label=f"m={m}, T={T:.2f}")    # i.e. friendlier histogram
 
     if combined is None:
         combined = np.zeros_like(values)
