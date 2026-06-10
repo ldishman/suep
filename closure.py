@@ -69,25 +69,32 @@ def GenSphericity(events):
 
     # Flatten mesons; replicate per-event β across particles via an event index
     n = ak.to_numpy(ak.num(px, axis=1))
-    ev = np.repeat(np.arange(len(n)), n)
+    ev = np.repeat(np.arange(len(n)), n).astype(np.int32)
     px_f = ak.to_numpy(ak.flatten(px)).astype(np.float32)
     py_f = ak.to_numpy(ak.flatten(py)).astype(np.float32)
     pz_f = ak.to_numpy(ak.flatten(pz)).astype(np.float32)
     E_f  = ak.to_numpy(ak.flatten(E)).astype(np.float32)
     del px, py, pz, E
     del pt, eta, phi
-    bx_p, by_p, bz_p, g_p = bx[ev], by[ev], bz[ev], gamma[ev]
+    #bx_p, by_p, bz_p, g_p = bx[ev], by[ev], bz[ev], gamma[ev]
+    # keep everything float32 — one float64 operand upcasts the whole boost back to float64
+    bx_p = bx[ev].astype(np.float32); by_p = by[ev].astype(np.float32)
+    bz_p = bz[ev].astype(np.float32); g_p  = gamma[ev].astype(np.float32)
 
     # Lorentz boost each meson into the mediator rest frame
     bp = bx_p*px_f + by_p*py_f + bz_p*pz_f
     g2 = g_p**2 / (g_p + 1)
-    px_b = px_f + g2*bp*bx_p - g_p*bx_p*E_f
-    py_b = py_f + g2*bp*by_p - g_p*by_p*E_f
-    pz_b = pz_f + g2*bp*bz_p - g_p*bz_p*E_f
+    coef = g2*bp - g_p*E_f          # px_b = px_f + bx_p*coef, etc. — one shared array
+    del bp, g2, g_p, E_f
+    #px_b = px_f + g2*bp*bx_p - g_p*bx_p*E_f
+    #py_b = py_f + g2*bp*by_p - g_p*by_p*E_f
+    #pz_b = pz_f + g2*bp*bz_p - g_p*bz_p*E_f
+    px_b = px_f + bx_p*coef
+    py_b = py_f + by_p*coef
+    pz_b = pz_f + bz_p*coef
 
-    del px_f, py_f, pz_f, E_f    # helps with memory issue
-    del bx_p, by_p, bz_p, g_p
-    del bp, g2
+    del px_f, py_f, pz_f, coef   # helps with memory issue
+    del bx_p, by_p, bz_p
 
     # Sphericity tensor using BOOSTED momenta; per-event sums via bincount
     p2 = px_b**2 + py_b**2 + pz_b**2
@@ -103,7 +110,7 @@ def GenSphericity(events):
 
     N = len(norm)
     del norm
-    s = np.zeros((N, 3, 3))
+    s = np.zeros((N, 3, 3), dtype=np.float32)
     s[:, 0, 0], s[:, 0, 1], s[:, 0, 2] = sxx, sxy, sxz
     s[:, 1, 0], s[:, 1, 1], s[:, 1, 2] = sxy, syy, syz
     s[:, 2, 0], s[:, 2, 1], s[:, 2, 2] = sxz, syz, szz
@@ -158,10 +165,10 @@ b_fit = 4.129
 
 def predict_mu_sigma(T, m):
     mu0 = c_fit / np.sqrt(m**2 + a_fit * T**2)   # = (mu - 0.5), the quantity actually fit
+    mu = mu0 + 0.5                                # add the 0.5 offset back
     x = np.log2(T/m)
     g = A_fit * 2**x / np.sqrt(1 + b_fit * 2**(2*x))
     sigma = np.sqrt(mu) * g                      # sigma fit normalized by sqrt(mu)
-    mu = mu0 + 0.5                                # add the 0.5 offset back
     return mu, sigma
 
 #################################################################
