@@ -195,6 +195,8 @@ class GaussianTarget(SUEPSample):
         self.tree = None
 
         mu, sigma = predict_mu_sigma(T, m)
+        self.mu = mu
+        self.sigma = sigma
         h = ROOT.TH1D(tag + cfg.name, tag + cfg.name,
                       len(cfg.bins)-1, array.array('d', cfg.bins))
         #centers = 0.5 * (cfg.bins[1:] + cfg.bins[:-1])    # before
@@ -214,23 +216,67 @@ m = float(sys.argv[2])
 T = float(sys.argv[3])
 
 # Validated mix (from mix.py)
+#base = SUEPSample(
+#    files = joinLists([collectFilesFromFolder(folder) for folder in [
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.25/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.25_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.35/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.35_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.50/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.50_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.71/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.71_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T1.00_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_2.83/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T2.83_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_2.0_0.50/UL18/ZHleptonicpythia_leptonic_M125_MD2.0_T0.50_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_2.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD2.0_T1.00_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_1.06/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T1.06_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_4.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD4.0_T1.00_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_6.0_3.00/UL18/ZHleptonicpythia_leptonic_M125_MD6.0_T3.00_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_7.0_7.00/UL18/ZHleptonicpythia_leptonic_M125_MD7.0_T7.00_HT-1_/NANOAOD/",
+#        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_8.0_16.00/UL18/ZHleptonicpythia_leptonic_M125_MD8.0_T16.00_HT-1_/NANOAOD/",
+#    ]]),
+#    tag = "Mix (Leptonic)",
+#    color = ROOT.kRed,
+#    variables = variables,
+#    weighted_color = ROOT.kBlack)
+
+# Test if Generic --> Generic works better (particularly for m=2 T=0.5)
+#mix_flavor = "Generic"   
+#mix_points = [(2.0,0.50),(2.0,1.00),(3.0,1.06),(4.0,1.00),(6.0,3.00),(7.0,7.00),(8.0,16.00)]
+#
+#base = SUEPSample(
+#    files = joinLists([
+#        collectFilesFromFolder(folder)
+#        for mm, TT in mix_points
+#        for folder in glob.glob(
+#            f"/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/"
+#            f"{mix_flavor}_{mm:.1f}_{TT:.2f}/*/*/NANOAOD/")
+#    ]),
+#    tag = f"Mix ({mix_flavor})",
+#    color = ROOT.kRed,
+#    variables = variables,
+#    weighted_color = ROOT.kBlack)
+
+# Mix MATCHES the held-out flavor: Lep->Lep, Gen->Gen, Had->Had (validated ladders).
+mix_flavor = category
+mix_lists = {
+    "Leptonic": [(1.0,0.25),(1.0,0.35),(1.0,0.50),(1.0,0.71),(1.0,1.00),(1.0,2.83),
+                 (2.0,0.50),(2.0,1.00),(3.0,1.06),(4.0,1.00),(6.0,3.00),(7.0,7.00),(8.0,16.00)],
+    "Generic":  [(2.0,0.50),(2.0,0.71),(2.0,1.00),(2.0,1.41),(2.0,2.00),(2.0,2.83),
+                 (2.0,4.00),(2.0,5.66),(2.0,8.00),(8.0,16.00),(8.0,32.00)],
+    "Hadronic": [(1.40,0.35),(1.40,0.49),(1.40,0.70),(1.40,0.99),(1.40,1.40),(1.40,1.98),
+                 (1.40,2.80),(1.40,3.96),(1.40,5.60),(8.0,16.00),(8.0,32.00)],
+}
+mix_points = mix_lists[mix_flavor]
+
+mix_files = []
+for mm, TT in mix_points:
+    folders = glob.glob(
+        f"/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/"
+        f"{mix_flavor}_{mm:g}*_{TT:.2f}/*/*/NANOAOD/")
+    assert folders, f"NO mix folder for {mix_flavor} m={mm} T={TT}"   # silent-miss guard
+    mix_files += [collectFilesFromFolder(f) for f in folders]
+
 base = SUEPSample(
-    files = joinLists([collectFilesFromFolder(folder) for folder in [
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.25/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.25_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.35/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.35_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.50/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.50_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.71/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.71_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T1.00_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_2.83/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T2.83_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_2.0_0.50/UL18/ZHleptonicpythia_leptonic_M125_MD2.0_T0.50_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_2.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD2.0_T1.00_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_1.06/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T1.06_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_4.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD4.0_T1.00_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_6.0_3.00/UL18/ZHleptonicpythia_leptonic_M125_MD6.0_T3.00_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_7.0_7.00/UL18/ZHleptonicpythia_leptonic_M125_MD7.0_T7.00_HT-1_/NANOAOD/",
-        "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_8.0_16.00/UL18/ZHleptonicpythia_leptonic_M125_MD8.0_T16.00_HT-1_/NANOAOD/",
-    ]]),
-    tag = "Mix (Leptonic)",
+    files = joinLists(mix_files),
+    tag = f"Mix ({mix_flavor})",
     color = ROOT.kRed,
     variables = variables,
     weighted_color = ROOT.kBlack)
@@ -252,6 +298,11 @@ held_out = SUEPSample(
 gauss_target = GaussianTarget(m, T, allPlots["nPhiGen"],
                               tag = f"f(T,m) pred",
                               color = ROOT.kGreen)
+
+
+# Check mu and sigma values by hand, see if these from the fitted shape match the values from fit.py
+print(f"mu = {gauss_target.mu}")
+print(f"sigma = {gauss_target.sigma}")
 
 # Tell base (mix) to reweight to the predicted Gaussian (NOT to the actual held-out)
 base.weightFunction = partial(base.reweight, otherSample=gauss_target, cfg=allPlots["nPhiGen"])

@@ -33,33 +33,33 @@ def MasslessInvMass(events):
     totp  = ak.sum(p, axis=1)
     return np.sqrt(totp**2 - totpz**2 - totpy**2-totpx**2)
 
-def GenSphericity(events):
-    cut = (events["GenPart_pdgId"]==999999)
-    pt   = events["GenPart_pt"][cut]
-    eta  = events["GenPart_eta"][cut]
-    phi  = events["GenPart_phi"][cut]
-    px = pt*np.cos(phi)
-    py = pt*np.sin(phi)
-    pz = pt*np.sinh(eta)
-    p  = pt*np.cosh(eta)
-    r = 2
-
-    norm = ak.to_numpy(ak.sum(p ** r, axis=1))
-    def comp(a, b):
-        return ak.to_numpy(ak.sum(a*b * p ** (r-2.0), axis=1)) / norm
-
-    sxx, sxy, sxz = comp(px, px), comp(px, py), comp(px, pz)
-    syy, syz, szz = comp(py, py), comp(py, pz), comp(pz, pz)
-
-    N = len(norm)
-    s = np.zeros((N, 3, 3))
-    s[:, 0, 0], s[:, 0, 1], s[:, 0, 2] = sxx, sxy, sxz
-    s[:, 1, 0], s[:, 1, 1], s[:, 1, 2] = sxy, syy, syz
-    s[:, 2, 0], s[:, 2, 1], s[:, 2, 2] = sxz, syz, szz
-
-    s = np.nan_to_num(s, copy=False, nan=1., posinf=1., neginf=1.)
-    evals = np.sort(np.linalg.eigvalsh(s), axis=1)
-    return 1.5 * (evals[:, 0] + evals[:, 1])
+#def GenSphericity(events):
+#    cut = (events["GenPart_pdgId"]==999999)
+#    pt   = events["GenPart_pt"][cut]
+#    eta  = events["GenPart_eta"][cut]
+#    phi  = events["GenPart_phi"][cut]
+#    px = pt*np.cos(phi)
+#    py = pt*np.sin(phi)
+#    pz = pt*np.sinh(eta)
+#    p  = pt*np.cosh(eta)
+#    r = 2
+#
+#    norm = ak.to_numpy(ak.sum(p ** r, axis=1))
+#    def comp(a, b):
+#        return ak.to_numpy(ak.sum(a*b * p ** (r-2.0), axis=1)) / norm
+#
+#    sxx, sxy, sxz = comp(px, px), comp(px, py), comp(px, pz)
+#    syy, syz, szz = comp(py, py), comp(py, pz), comp(pz, pz)
+#
+#    N = len(norm)
+#    s = np.zeros((N, 3, 3))
+#    s[:, 0, 0], s[:, 0, 1], s[:, 0, 2] = sxx, sxy, sxz
+#    s[:, 1, 0], s[:, 1, 1], s[:, 1, 2] = sxy, syy, syz
+#    s[:, 2, 0], s[:, 2, 1], s[:, 2, 2] = sxz, syz, szz
+#
+#    s = np.nan_to_num(s, copy=False, nan=1., posinf=1., neginf=1.)
+#    evals = np.sort(np.linalg.eigvalsh(s), axis=1)
+#    return 1.5 * (evals[:, 0] + evals[:, 1])
 
 # Define plots to do, one entry means one comparison plot
 # Note that if we use more variables they need to be added to the "variables" list below (this is a trick to not load the whole set of variables in the files)
@@ -74,15 +74,15 @@ allPlots = {
                     }
                 ),
 
-    "nPFCands": Plot(
-                    name  = "nPFCands",
-                    var   = lambda x: x["nPFCands"],
-                    bins  = np.arange(200),
-                    extra= {
-                        "is2D"   : False,
-                        "xlabel" : "N_{PF}"
-                    }
-                ),
+#    "nPFCands": Plot(
+#                    name  = "nPFCands",
+#                    var   = lambda x: x["nPFCands"],
+#                    bins  = np.arange(200),
+#                    extra= {
+#                        "is2D"   : False,
+#                        "xlabel" : "N_{PF}"
+#                    }
+#                ),
 #"""    "MasslessInvMass" : Plot(
 #                    name = "MasslessInvMass",
 #                    var  = MasslessInvMass,
@@ -93,15 +93,15 @@ allPlots = {
 #                    }
 #                ),
 #
-    "GenSphericity": Plot(
-                    name  = "GenSphericity",
-                    var   = GenSphericity,
-                    bins  = np.arange(0,1.05, 0.05),
-                    extra= {
-                        "is2D"   : False,
-                        "xlabel" : "S_{#Phi}^{r=2}"
-                    }
-                ), 
+#    "GenSphericity": Plot(
+#                    name  = "GenSphericity",
+#                    var   = GenSphericity,
+#                    bins  = np.arange(0,1.05, 0.05),
+#                    extra= {
+#                        "is2D"   : False,
+#                        "xlabel" : "S_{#Phi}^{r=2}"
+#                    }
+#                ), 
 #    "MeanPhiPt": Plot(
 #                    name = "MeanPhiPt",
 #                    var  = MeanPhiPt,
@@ -138,24 +138,25 @@ allPlots = {
 #####################
 
 # These will be loaded from the trees 
-variables = ["nPFCands", "GenPart_pdgId", "GenPart_pt", "GenPart_eta", "GenPart_phi"]#, "GenPart_mass"]
+#variables = ["nPFCands", "GenPart_pdgId", "GenPart_pt", "GenPart_eta", "GenPart_phi"]#, "GenPart_mass"]
+variables = ["GenPart_pdgId", "GenPart_pt", "GenPart_eta", "GenPart_phi"]#, "GenPart_mass"]
 
-base   = SUEPSample(
-        files = joinLists([collectFilesFromFolder(folder) for folder in [ # Files to load
-            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_0.75/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T0.75_HT-1_/NANOAOD/",
-            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_1.06/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T1.06_HT-1_/NANOAOD/",
-            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_1.50/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T1.50_HT-1_/NANOAOD/",
-            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_2.12/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T2.12_HT-1_/NANOAOD/",
-            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_3.00/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T3.00_HT-1_/NANOAOD/",
-            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_4.24/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T4.24_HT-1_/NANOAOD/",
-            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_6.00/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T6.00_HT-1_/NANOAOD/",
-            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_8.49/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T8.49_HT-1_/NANOAOD/",
-            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_12.00/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T12.00_HT-1_/NANOAOD/",
-            ]]),
-        tag = "Mix", #Name in the legend
-        color = ROOT.kRed, # Color for nominal
-        variables = variables, #Which variables will need to be loaded from root
-        weighted_color= ROOT.kBlack) # Color for weighted version
+#base   = SUEPSample(
+#        files = joinLists([collectFilesFromFolder(folder) for folder in [ # Files to load
+#            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_0.75/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T0.75_HT-1_/NANOAOD/",
+#            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_1.06/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T1.06_HT-1_/NANOAOD/",
+#            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_1.50/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T1.50_HT-1_/NANOAOD/",
+#            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_2.12/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T2.12_HT-1_/NANOAOD/",
+#            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_3.00/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T3.00_HT-1_/NANOAOD/",
+#            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_4.24/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T4.24_HT-1_/NANOAOD/",
+#            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_6.00/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T6.00_HT-1_/NANOAOD/",
+#            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_8.49/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T8.49_HT-1_/NANOAOD/",
+#            "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_12.00/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T12.00_HT-1_/NANOAOD/",
+#            ]]),
+#        tag = "Mix", #Name in the legend
+#        color = ROOT.kRed, # Color for nominal
+#        variables = variables, #Which variables will need to be loaded from root
+#        weighted_color= ROOT.kBlack) # Color for weighted version
 
 category = sys.argv[1]
 m = float(sys.argv[2])
@@ -174,7 +175,7 @@ target = SUEPSample(
 
 # This means that the base samples will optionally be weighted by using the reweight method of the SUEPSample class, which takes other sample and a plot configuration as inputs
 # If you look at SUEPSample.reweight in interpFromScan_uproot.py, this means that it will make the histograms of the plot configured as "nPhiGen" for both samples, then weight based on the ratio between the two such that "base" becomes "target"
-base.weightFunction = partial(base.reweight, otherSample=target, cfg = allPlots["nPhiGen"])
+#base.weightFunction = partial(base.reweight, otherSample=target, cfg = allPlots["nPhiGen"])
 
 ####################
 ## Execution area ##
@@ -187,7 +188,8 @@ outdir = os.path.join(tmpdir, prefix + "output")
 # Create the directory if it doesn't exist
 os.makedirs(outdir, exist_ok=True)
 
-plot1D = Plotter1D([target, base], outdir + "/" + prefix)
+#plot1D = Plotter1D([target, base], outdir + "/" + prefix)
+plot1D = Plotter1D([target], outdir + "/" + prefix)
 #print(dir(plot1D))
 
 # Save ROOT file of histograms
@@ -199,6 +201,6 @@ for plot in allPlots.values():
 root_file.Close()
 
 # And execute the plotter for all plots
-for plot in allPlots:
-    plot1D.plotVariable(allPlots[plot])
+#for plot in allPlots:
+#    plot1D.plotVariable(allPlots[plot])
 

@@ -202,6 +202,7 @@ class Plotter1D(object):
         tl.SetBorderSize(0)
         tl.SetFillStyle(0)                          # transparent -> curves show through
         histos = {}
+        raw = {}                 # raw (pre-normalization) counts+errors for chi2
         first = True
         sampletags = []
         for sample in self.samples:
@@ -211,6 +212,9 @@ class Plotter1D(object):
             histos[sample.tag ].SetDirectory(0)
             histos[sample.tag ].SetLineColor(sample.color)
             histos[sample.tag ].SetFillColor(0)
+            nbx = histos[sample.tag].GetNbinsX()
+            raw[sample.tag] = ([histos[sample.tag].GetBinContent(b) for b in range(1, nbx+1)],
+                               [histos[sample.tag].GetBinError(b)   for b in range(1, nbx+1)])
             histos[sample.tag ].Scale(1./histos[sample.tag].Integral())
             if sample.weightFunction:
                 newtag = "Weighted %s"%sample.tag.split(" (")[0]   # "Weighted Mix (Leptonic)" -> "Weighted Mix"
@@ -221,6 +225,9 @@ class Plotter1D(object):
                 histos[newtag].SetLineColor(sample.weighted_color)
                 histos[newtag].SetFillColor(0)
                 #histos[newtag].Scale(1./histos[newtag].Integral())
+                nbw = histos[newtag].GetNbinsX()
+                raw[newtag] = ([histos[newtag].GetBinContent(b) for b in range(1, nbw+1)],
+                               [histos[newtag].GetBinError(b)   for b in range(1, nbw+1)])
                 integral = histos[newtag].Integral()
                 if integral != 0:
                     histos[newtag].Scale(1./integral)
@@ -254,6 +261,23 @@ class Plotter1D(object):
             ratios[tag].GetXaxis().SetLabelSize(0.1)
             ratios[tag].GetYaxis().SetLabelSize(0.06)
             ratios[tag].Draw("psame")
+        # goodness of fit: total variation distance between normalized shapes
+        # 0 = identical, ~0.05 = excellent, 0.2 = visibly off, 1 = disjoint
+        p1.cd()
+        obs_c, _ = raw[sampletags[0]]                       # held-out = first sample
+        obs_tot  = sum(obs_c)
+        gof_text = ROOT.TLatex(); gof_text.SetNDC(True); gof_text.SetTextSize(0.032)
+        ypos = 0.86
+        for tag in sampletags[1:]:                          # mix (unweighted) and Weighted mix
+            pred_c, _ = raw[tag]
+            ptot = sum(pred_c)
+            if ptot > 0 and obs_tot > 0:
+                tvd = 0.5 * sum(abs(p/ptot - o/obs_tot) for p, o in zip(pred_c, obs_c))
+            else:
+                tvd = float("nan")
+            gof_text.DrawLatex(0.18, ypos, "TVD (%s) = %.3f" % (tag, tvd))
+            ypos -= 0.05
+        #print(f"raw should be large but it's: {sum(raw[sampletags[0]][0])}")
         c.SaveAs(self.output + cfg.name +".pdf")
         c.SaveAs(self.output + cfg.name +".png")   
         c.Close()

@@ -13,11 +13,12 @@ samples=(
 #"Generic 2.0 0.50"
 #"Leptonic 3.0 4.24" "Leptonic 8.0 22.63"
 #"Leptonic 5.0 14.14" "Leptonic 6.0 16.97" "Leptonic 7.0 4.95" "Leptonic 7.0 19.80" "Leptonic 8.0 5.66"
-#"Leptonic 2.0 0.50" "Generic 2.0 0.50" "Hadronic 2.0 0.50"
-#"Leptonic 3.0 4.24" "Generic 3.0 4.24" "Hadronic 3.0 4.24"
-#"Leptonic 5.0 10.00" "Generic 5.0 10.00" "Hadronic 5.0 10.00"
-#"Leptonic 8.0 22.63" 
-"Generic 8.0 22.63" "Hadronic 8.0 22.63"
+#"Generic 2.0 0.71"
+"Leptonic 2.0 0.50" "Generic 2.0 0.50" "Hadronic 2.0 0.50"
+"Leptonic 3.0 4.24" "Generic 3.0 4.24" "Hadronic 3.0 4.24"
+"Leptonic 5.0 10.00" "Generic 5.0 10.00" "Hadronic 5.0 10.00"
+"Leptonic 8.0 22.63" "Generic 8.0 22.63" "Hadronic 8.0 22.63" 
+#"Generic 2.0 0.71"
 )
 
 # Loop over all samples and run Python script

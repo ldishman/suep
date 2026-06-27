@@ -1,3 +1,7 @@
+# Sole remaining purpose: read the 11 real mix samples and dump their normalized nPhiGen shapes 
+# (f_s) — that's the one ingredient the grid-based optimizer can't synthesize, since the mix 
+# must be real simulatable samples.
+
 from interpFromScan_uproot import *
 import awkward as ak
 import os, sys, glob, re
@@ -46,11 +50,13 @@ def shape_and_N(h):
 #####################
 
 variables = ["GenPart_pdgId"]
-category = sys.argv[1]
-m = float(sys.argv[2])
-T = float(sys.argv[3])
+#category = sys.argv[1]
+#m = float(sys.argv[2])
+#T = float(sys.argv[3])
 
 # Validated mix (from mix.py) — one sample per point so the variance can be decomposed
+
+# Leptonic
 mix_folders = [
     "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.25/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.25_HT-1_/NANOAOD/",
     "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.35/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.35_HT-1_/NANOAOD/",
@@ -67,6 +73,36 @@ mix_folders = [
     "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_8.0_16.00/UL18/ZHleptonicpythia_leptonic_M125_MD8.0_T16.00_HT-1_/NANOAOD/",
 ]
 
+# Generic
+#mix_folders = [
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Generic_2.0_0.50/UL18/ZHleptonicpythia_generic_M125_MD2.0_T0.50_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Generic_2.0_0.71/UL18/ZHleptonicpythia_generic_M125_MD2.0_T0.71_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Generic_2.0_1.00/UL18/ZHleptonicpythia_generic_M125_MD2.0_T1.00_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Generic_2.0_1.41/UL18/ZHleptonicpythia_generic_M125_MD2.0_T1.41_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Generic_2.0_2.00/UL18/ZHleptonicpythia_generic_M125_MD2.0_T2.00_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Generic_2.0_2.83/UL18/ZHleptonicpythia_generic_M125_MD2.0_T2.83_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Generic_2.0_4.00/UL18/ZHleptonicpythia_generic_M125_MD2.0_T4.00_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Generic_2.0_5.66/UL18/ZHleptonicpythia_generic_M125_MD2.0_T5.66_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Generic_2.0_8.00/UL18/ZHleptonicpythia_generic_M125_MD2.0_T8.00_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Generic_8.0_16.00/UL18/ZHleptonicpythia_generic_M125_MD8.0_T16.00_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Generic_8.0_32.00/UL18/ZHleptonicpythia_generic_M125_MD8.0_T32.00_HT-1_/NANOAOD/",
+#]
+
+# Hadronic
+#mix_folders = [
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Hadronic_1.40_0.35/UL18/ZHleptonicpythia_hadronic_M125_MD1.40_T0.35_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Hadronic_1.40_0.49/UL18/ZHleptonicpythia_hadronic_M125_MD1.40_T0.49_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Hadronic_1.40_0.70/UL18/ZHleptonicpythia_hadronic_M125_MD1.40_T0.70_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Hadronic_1.40_0.99/UL18/ZHleptonicpythia_hadronic_M125_MD1.40_T0.99_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Hadronic_1.40_1.40/UL18/ZHleptonicpythia_hadronic_M125_MD1.40_T1.40_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Hadronic_1.40_1.98/UL18/ZHleptonicpythia_hadronic_M125_MD1.40_T1.98_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Hadronic_1.40_2.80/UL18/ZHleptonicpythia_hadronic_M125_MD1.40_T2.80_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Hadronic_1.40_3.96/UL18/ZHleptonicpythia_hadronic_M125_MD1.40_T3.96_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Hadronic_1.40_5.60/UL18/ZHleptonicpythia_hadronic_M125_MD1.40_T5.60_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Hadronic_8.0_16.00/UL18/ZHleptonicpythia_hadronic_M125_MD8.0_T16.00_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Hadronic_8.0_32.00/UL18/ZHleptonicpythia_hadronic_M125_MD8.0_T32.00_HT-1_/NANOAOD/",
+#]
+
 mix_samples = [
     SUEPSample(
         files = joinLists([collectFilesFromFolder(folder)]),
@@ -77,29 +113,31 @@ mix_samples = [
 ]
 
 # Held-out validation point from command line (same style as closure.py)
-m_str = f"{m:.1f}"
-#m_str = f"{m:.2f}"
-T_str = f"{T:.2f}"
-tmpdir = "/tmp/ldishman/suep_variance"
-
-path = f"/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/{category}_{m_str}_{T_str}/*/*/NANOAOD/"
-
-held_out = SUEPSample(
-    files = joinLists([collectFilesFromFolder(folder) for folder in glob.glob(path)]),
-    tag = f"Target ({category}) m={m_str}, T={T_str}",
-    color = ROOT.kBlue,
-    variables = variables)
+#m_str = f"{m:.1f}"
+##m_str = f"{m:.2f}"
+#T_str = f"{T:.2f}"
+#tmpdir = "/tmp/ldishman/suep_variance"
+#
+#path = f"/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/{category}_{m_str}_{T_str}/*/*/NANOAOD/"
+#
+#held_out = SUEPSample(
+#    files = joinLists([collectFilesFromFolder(folder) for folder in glob.glob(path)]),
+#    tag = f"Target ({category}) m={m_str}, T={T_str}",
+#    color = ROOT.kBlue,
+#    variables = variables)
 
 ####################
 ## Execution area ##
 ####################
 
-prefix = f"variance_{category}_m{m_str}_T{T_str}_"
-outdir = os.path.join(tmpdir, prefix + "output")
+#prefix = f"variance_{category}_m{m_str}_T{T_str}_"
+#outdir = os.path.join(tmpdir, prefix + "output")
+outdir = "mix_output/Leptonic"          # optimizer globs mix_output/**/*shapes.npz
 os.makedirs(outdir, exist_ok=True)
+prefix = "variance_Leptonic_"
 
 cfg = allPlots["nPhiGen"]
-centers = np.asarray(cfg.bins, dtype=float)[:-1]    # integer-aligned (0.5 input shift)
+#centers = np.asarray(cfg.bins, dtype=float)[:-1]    # integer-aligned (0.5 input shift)
 
 # Each mix sample's nPhiGen with REAL event counts
 sample_counts, sample_labels, sample_N = [], [], []
@@ -117,52 +155,54 @@ for lab, n in zip(sample_labels, sample_N):
     print(f"  {lab:18s} {n:.0f}")
 
 # Actual held-out target as f_target
-tvals, _ = shape_and_N(get_hist(held_out, cfg))
-f_target = tvals / tvals.sum()
+#tvals, _ = shape_and_N(get_hist(held_out, cfg))
+#f_target = tvals / tvals.sum()
 
 # --- dump raw shapes for the optimizer (one file per target) ---
 f_s = sample_counts / sample_counts.sum(axis=1, keepdims=True)   # per-sample N_phi pdfs
+#np.savez(os.path.join(outdir, prefix + "shapes.npz"),
+#         f_s=f_s, f_target=f_target,
+#         labels=np.array(sample_labels), target=f"m={m_str}, T={T_str}")
 np.savez(os.path.join(outdir, prefix + "shapes.npz"),
-         f_s=f_s, f_target=f_target,
-         labels=np.array(sample_labels), target=f"m={m_str}, T={T_str}")
+         f_s=f_s, labels=np.array(sample_labels))
 
-# Count-weighted mix pdf, per-event weight^2, per-sample variance
-mix_counts = sample_counts.sum(axis=0)
-f_mix = mix_counts / mix_counts.sum()
-w2 = np.divide(f_target, f_mix, out=np.zeros_like(f_target), where=f_mix > 0)**2
-contribs = sample_counts * w2                       # n_{s,b} * w(b)^2
-
-# Overlay of mix sample shapes
-#for c, lab in zip(sample_counts, sample_labels):
-#    plt.step(centers, c / c.sum(), where="mid", label=lab)
-#plt.yscale("log")
-#plt.xlim(0, 200)
+## Count-weighted mix pdf, per-event weight^2, per-sample variance
+#mix_counts = sample_counts.sum(axis=0)
+#f_mix = mix_counts / mix_counts.sum()
+#w2 = np.divide(f_target, f_mix, out=np.zeros_like(f_target), where=f_mix > 0)**2
+#contribs = sample_counts * w2                       # n_{s,b} * w(b)^2
+#
+## Overlay of mix sample shapes
+##for c, lab in zip(sample_counts, sample_labels):
+##    plt.step(centers, c / c.sum(), where="mid", label=lab)
+##plt.yscale("log")
+##plt.xlim(0, 200)
+##plt.xlabel(r"$N_\phi$")
+##plt.ylabel("Normalized events")
+##plt.title("N_φ distributions of mix samples")
+##plt.legend(fontsize=7, ncol=2)
+##plt.savefig(os.path.join(outdir, prefix + "nphi_overlay.pdf"))
+##plt.clf()
+#
+## Stacked variance makeup for the target
+#support = centers[f_target > 1e-3 * f_target.max()]
+#plt.stackplot(centers, contribs, labels=sample_labels)
+#plt.xlim(support.min() - 2, support.max() + 2)
 #plt.xlabel(r"$N_\phi$")
-#plt.ylabel("Normalized events")
-#plt.title("N_φ distributions of mix samples")
+#plt.ylabel(r"variance contribution  $n_s\,(f_{target}/f_{mix})^2$")
+#plt.title(f"Variance makeup, target m={m_str}, T={T_str}")
 #plt.legend(fontsize=7, ncol=2)
-#plt.savefig(os.path.join(outdir, prefix + "nphi_overlay.pdf"))
+#plt.savefig(os.path.join(outdir, prefix + "variance_makeup.pdf"))
 #plt.clf()
-
-# Stacked variance makeup for the target
-support = centers[f_target > 1e-3 * f_target.max()]
-plt.stackplot(centers, contribs, labels=sample_labels)
-plt.xlim(support.min() - 2, support.max() + 2)
-plt.xlabel(r"$N_\phi$")
-plt.ylabel(r"variance contribution  $n_s\,(f_{target}/f_{mix})^2$")
-plt.title(f"Variance makeup, target m={m_str}, T={T_str}")
-plt.legend(fontsize=7, ncol=2)
-plt.savefig(os.path.join(outdir, prefix + "variance_makeup.pdf"))
-plt.clf()
-
-# Real totals: N_eff, relative uncertainty, per-sample shares
-V = contribs.sum(axis=1)
-Vtot = V.sum()
-Nmix = mix_counts.sum()
-print(f"\ntarget: rel stat unc = {100*np.sqrt(Vtot)/Nmix:.3f}%   N_eff = {Nmix**2/Vtot:.3e}")
-for lab, frac in sorted(zip(sample_labels, V/Vtot), key=lambda z: -z[1]):
-    print(f"  {lab:18s} {100*frac:5.1f}% of variance")
-
-gap = (f_mix == 0) & (f_target > 0)
-if gap.any():
-    print(f"WARNING: {int(gap.sum())} bins have target weight but NO mix events (uncoverable).")
+#
+## Real totals: N_eff, relative uncertainty, per-sample shares
+#V = contribs.sum(axis=1)
+#Vtot = V.sum()
+#Nmix = mix_counts.sum()
+#print(f"\ntarget: rel stat unc = {100*np.sqrt(Vtot)/Nmix:.3f}%   N_eff = {Nmix**2/Vtot:.3e}")
+#for lab, frac in sorted(zip(sample_labels, V/Vtot), key=lambda z: -z[1]):
+#    print(f"  {lab:18s} {100*frac:5.1f}% of variance")
+#
+#gap = (f_mix == 0) & (f_target > 0)
+#if gap.any():
+#    print(f"WARNING: {int(gap.sum())} bins have target weight but NO mix events (uncoverable).")

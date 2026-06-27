@@ -212,6 +212,9 @@ plt.clf()
 mask = x_all < 1.9
 y_all = (mu_vals - 0.5) * m_vals
 
+for x, y, m in zip(x_all, y_all, m_vals):
+    print(f"x = {x}, , m = {m}, mu = {y/m + 0.5}")
+
 popt, _ = curve_fit(collapse_model, x_all[mask], y_all[mask], p0=[90.0, 1.0])
 c_fit, a_fit = popt
 y_pred = collapse_model(x_all[mask], *popt)

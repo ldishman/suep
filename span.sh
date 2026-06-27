@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# NOTE: with the rewritten stat_mix.py this whole driver is obsolete.
+# stat_mix.py now takes NO arguments, has no held-out target, and writes
+# ONE shapes.npz (the mix f_s is identical for every target). Nothing to
+# loop over, nothing to copy from /tmp. Just run:  python3 stat_mix.py
+
 # Temporary working directory on local disk (must match tmpdir in stat_mix.py)
 TMPDIR="/tmp/ldishman/suep_variance"
 mkdir -p "$TMPDIR"
