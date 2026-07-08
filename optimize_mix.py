@@ -6,7 +6,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 eps_target   = 0.001
-eps_solve    = 0.00095   # solve to a smaller epsilon (if need) to leave headroom to actual epsilon requirement
+eps_solve    = 0.00075   # solve to a smaller epsilon (if need) to leave headroom to actual epsilon requirement
 FLAVOR = "Leptonic" 
 #files = sorted(glob.glob("mix_output/**/*shapes.npz", recursive=True))
 files = sorted(glob.glob(f"mix_output/{FLAVOR}/*shapes.npz"))
@@ -43,10 +43,29 @@ for m in np.linspace(M_LO, M_HI, NM):
         names.append(f"m={m:.2f}, T={T:.2f}")
 F_t = np.array(F_t)
 
+# --- TEST: add hypothetical mix sample(s) to see if they cut the event total ---
+#ADD_CANDIDATE = True
+#if ADD_CANDIDATE:
+#    candidates = [(2.0, 0.85),   # peaks ~mu=35 (first gap)
+#                  (2.0, 1.20),   # peaks ~mu=29 (next gap from last run)
+#                  (2.0, 0.62)]   # peaks ~mu=38 (next gap from last run)
+#    for cm, cT in candidates:
+#        cmu, csig = predict_mu_sigma(cT, cm)
+#        cg = np.exp(-(bins - cmu)**2 / (2*csig**2)); cg[bins < FLOOR] = 0.0
+#        F_s = np.vstack([F_s, cg / cg.sum()])
+#        labels = np.append(labels, f"CANDIDATE m={cm}, T={cT}")
+#        print(f"Added candidate m={cm}, T={cT} (mu={cmu:.1f})")
+
+#cover = F_s.sum(axis=0) > 1e-6              # drop N_phi bins no sample covers (uncoverable)
 cover = F_s.sum(axis=0) > 0          # drop N_phi bins no sample covers (uncoverable)
 lost = F_t[:, ~cover].sum(axis=1)                 # each target's pdf mass in uncoverable bins
 for i in np.where(lost > 1e-6)[0]:
     print(f"WARNING: {names[i]} has {100*lost[i]:.2f}% of its N_phi outside mix coverage (uncoverable)")
+# after solving, with nb_opt = F_s.T @ events:
+#weak = nb_opt < 100                      # bins with <100 events are effectively uncovered
+#lost_weak = F_t[:, weak].sum(axis=1)
+#for i in np.where(lost_weak > 0.01)[0]:
+#    print(f"WARNING: {names[i]} has {100*lost_weak[i]:.1f}% of mass in <100-event bins")
 KEEP = lost < 0.01
 
 # Print bounds of method's success
@@ -135,6 +154,11 @@ plt.savefig("mix_output/mix_coverage.pdf"); plt.close()
 nb_opt = F_s.T @ events
 eps_t  = np.sqrt((F_t**2 / nb_opt).sum(axis=1))
 mu_t   = (F_t * centers).sum(axis=1) / F_t.sum(axis=1)
+worst = eps_t.argmax()
+contrib = F_t[worst]**2 / np.maximum(nb_opt, 1.0)   # floor n_b at 1 event to avoid fake blowup
+print(f"\nWorst target: {names[worst]}  (eps={eps_t[worst]*100:.4f}%)")
+for b in np.argsort(contrib)[::-1][:8]:           # top 8 cost-driving bins
+    print(f"  N_phi={centers[b]:.0f}: contrib={contrib[b]/ (eps_t[worst]**2)*100:5.1f}%  (n_b={nb_opt[b]:.3e})")
 o = np.argsort(mu_t)
 plt.figure()
 plt.plot(mu_t[o], eps_t[o]*100, ".", ms=2, alpha=0.3)        # dense grid cloud

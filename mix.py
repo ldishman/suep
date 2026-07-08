@@ -5,22 +5,39 @@ import matplotlib
 matplotlib.use("Agg")
 import re
 
-# Leptonic
-mix_files = [
-    "refM3_output/Leptonic_m1.0_T0.25_output/Leptonic_m1.0_T0.25_histos.root",
-    "refM3_output/Leptonic_m1.0_T0.35_output/Leptonic_m1.0_T0.35_histos.root",
-    "refM3_output/Leptonic_m1.0_T0.50_output/Leptonic_m1.0_T0.50_histos.root",
-    "refM3_output/Leptonic_m1.0_T0.71_output/Leptonic_m1.0_T0.71_histos.root",
-    "refM3_output/Leptonic_m1.0_T1.00_output/Leptonic_m1.0_T1.00_histos.root",
-    "refM3_output/Leptonic_m1.0_T2.83_output/Leptonic_m1.0_T2.83_histos.root",  # fills ~15-18 gap
-    "refM3_output/Leptonic_m2.0_T0.50_output/Leptonic_m2.0_T0.50_histos.root",
-    "refM3_output/Leptonic_m2.0_T1.00_output/Leptonic_m2.0_T1.00_histos.root",
-    "refM3_output/Leptonic_m3.0_T1.06_output/Leptonic_m3.0_T1.06_histos.root",
-    "refM3_output/Leptonic_m4.0_T1.00_output/Leptonic_m4.0_T1.00_histos.root",
-    "refM3_output/Leptonic_m6.0_T3.00_output/Leptonic_m6.0_T3.00_histos.root",
-    "refM3_output/Leptonic_m7.0_T7.00_output/Leptonic_m7.0_T7.00_histos.root",
-    "refM3_output/Leptonic_m8.0_T16.00_output/Leptonic_m8.0_T16.00_histos.root",
-]
+# Leptonic ORIGINAL
+#mix_files = [
+#    "refM3_output/Leptonic_m1.0_T0.25_output/Leptonic_m1.0_T0.25_histos.root",
+#    "refM3_output/Leptonic_m1.0_T0.35_output/Leptonic_m1.0_T0.35_histos.root",
+#    "refM3_output/Leptonic_m1.0_T0.50_output/Leptonic_m1.0_T0.50_histos.root",
+#    "refM3_output/Leptonic_m1.0_T0.71_output/Leptonic_m1.0_T0.71_histos.root",
+#    "refM3_output/Leptonic_m1.0_T1.00_output/Leptonic_m1.0_T1.00_histos.root",
+#    "refM3_output/Leptonic_m1.0_T2.83_output/Leptonic_m1.0_T2.83_histos.root",  # fills ~15-18 gap
+#    "refM3_output/Leptonic_m2.0_T0.50_output/Leptonic_m2.0_T0.50_histos.root",
+#    "refM3_output/Leptonic_m2.0_T1.00_output/Leptonic_m2.0_T1.00_histos.root",
+#    "refM3_output/Leptonic_m3.0_T1.06_output/Leptonic_m3.0_T1.06_histos.root",
+#    "refM3_output/Leptonic_m4.0_T1.00_output/Leptonic_m4.0_T1.00_histos.root",
+#    "refM3_output/Leptonic_m6.0_T3.00_output/Leptonic_m6.0_T3.00_histos.root",
+#    "refM3_output/Leptonic_m7.0_T7.00_output/Leptonic_m7.0_T7.00_histos.root",
+#    "refM3_output/Leptonic_m8.0_T16.00_output/Leptonic_m8.0_T16.00_histos.root",
+#]
+
+# ALTERNATIVE -- NOT USING!
+# Leptonic (m=1.0 ladder + m=8.0 wall, matching Generic/Hadronic architecture)
+#mix_files = [
+#    "refM3_output/Leptonic_m1.0_T0.25_output/Leptonic_m1.0_T0.25_histos.root",
+#    "refM3_output/Leptonic_m1.0_T0.35_output/Leptonic_m1.0_T0.35_histos.root",
+#    "refM3_output/Leptonic_m1.0_T0.50_output/Leptonic_m1.0_T0.50_histos.root",
+#    "refM3_output/Leptonic_m1.0_T0.71_output/Leptonic_m1.0_T0.71_histos.root",
+#    "refM3_output/Leptonic_m1.0_T1.00_output/Leptonic_m1.0_T1.00_histos.root",
+#    "refM3_output/Leptonic_m1.0_T1.41_output/Leptonic_m1.0_T1.41_histos.root",
+#    "refM3_output/Leptonic_m1.0_T2.00_output/Leptonic_m1.0_T2.00_histos.root",
+#    "refM3_output/Leptonic_m1.0_T2.83_output/Leptonic_m1.0_T2.83_histos.root",
+#    "refM3_output/Leptonic_m1.0_T4.00_output/Leptonic_m1.0_T4.00_histos.root",
+#    "refM3_output/Leptonic_m2.0_T5.66_output/Leptonic_m2.0_T5.66_histos.root",  # fills mu~7 gap
+#    "refM3_output/Leptonic_m8.0_T16.00_output/Leptonic_m8.0_T16.00_histos.root",
+#    "refM3_output/Leptonic_m8.0_T32.00_output/Leptonic_m8.0_T32.00_histos.root",
+#]
 
 # Generic
 #mix_files = [
@@ -38,19 +55,19 @@ mix_files = [
 #]
 
 # Hadronic
-#mix_files = [
-#    "refM3_output/Hadronic_m1.40_T0.35_output/Hadronic_m1.40_T0.35_histos.root",  # ~58  (ceiling)
-#    "refM3_output/Hadronic_m1.40_T0.49_output/Hadronic_m1.40_T0.49_histos.root",  # ~51
-#    "refM3_output/Hadronic_m1.40_T0.70_output/Hadronic_m1.40_T0.70_histos.root",  # ~43
-#    "refM3_output/Hadronic_m1.40_T0.99_output/Hadronic_m1.40_T0.99_histos.root",  # ~35
-#    "refM3_output/Hadronic_m1.40_T1.40_output/Hadronic_m1.40_T1.40_histos.root",  # ~27
-#    "refM3_output/Hadronic_m1.40_T1.98_output/Hadronic_m1.40_T1.98_histos.root",  # ~20
-#    "refM3_output/Hadronic_m1.40_T2.80_output/Hadronic_m1.40_T2.80_histos.root",  # ~14
-#    "refM3_output/Hadronic_m1.40_T3.96_output/Hadronic_m1.40_T3.96_histos.root",  # ~10
-#    "refM3_output/Hadronic_m1.40_T5.60_output/Hadronic_m1.40_T5.60_histos.root",  # ~7
-#    "refM3_output/Hadronic_m8.0_T16.00_output/Hadronic_m8.0_T16.00_histos.root",  # ~3
-#    "refM3_output/Hadronic_m8.0_T32.00_output/Hadronic_m8.0_T32.00_histos.root",  # ~2
-#]
+mix_files = [
+    "refM3_output/Hadronic_m1.40_T0.35_output/Hadronic_m1.40_T0.35_histos.root",  # ~58  (ceiling)
+    "refM3_output/Hadronic_m1.40_T0.49_output/Hadronic_m1.40_T0.49_histos.root",  # ~51
+    "refM3_output/Hadronic_m1.40_T0.70_output/Hadronic_m1.40_T0.70_histos.root",  # ~43
+    "refM3_output/Hadronic_m1.40_T0.99_output/Hadronic_m1.40_T0.99_histos.root",  # ~35
+    "refM3_output/Hadronic_m1.40_T1.40_output/Hadronic_m1.40_T1.40_histos.root",  # ~27
+    "refM3_output/Hadronic_m1.40_T1.98_output/Hadronic_m1.40_T1.98_histos.root",  # ~20
+    "refM3_output/Hadronic_m1.40_T2.80_output/Hadronic_m1.40_T2.80_histos.root",  # ~14
+    "refM3_output/Hadronic_m1.40_T3.96_output/Hadronic_m1.40_T3.96_histos.root",  # ~10
+    "refM3_output/Hadronic_m1.40_T5.60_output/Hadronic_m1.40_T5.60_histos.root",  # ~7
+    "refM3_output/Hadronic_m8.0_T16.00_output/Hadronic_m8.0_T16.00_histos.root",  # ~3
+    "refM3_output/Hadronic_m8.0_T32.00_output/Hadronic_m8.0_T32.00_histos.root",  # ~2
+]
 
 combined = None
 centers = None

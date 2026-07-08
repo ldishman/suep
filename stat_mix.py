@@ -56,21 +56,37 @@ variables = ["GenPart_pdgId"]
 
 # Validated mix (from mix.py) — one sample per point so the variance can be decomposed
 
-# Leptonic
+# Leptonic ORIGINAL
+#mix_folders = [
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.25/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.25_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.35/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.35_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.50/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.50_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.71/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.71_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T1.00_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_2.83/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T2.83_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_2.0_0.50/UL18/ZHleptonicpythia_leptonic_M125_MD2.0_T0.50_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_2.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD2.0_T1.00_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_1.06/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T1.06_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_4.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD4.0_T1.00_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_6.0_3.00/UL18/ZHleptonicpythia_leptonic_M125_MD6.0_T3.00_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_7.0_7.00/UL18/ZHleptonicpythia_leptonic_M125_MD7.0_T7.00_HT-1_/NANOAOD/",
+#    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_8.0_16.00/UL18/ZHleptonicpythia_leptonic_M125_MD8.0_T16.00_HT-1_/NANOAOD/",
+#]
+
+# Leptonic (m=1.0 ladder + m=8.0 wall, matching Generic/Hadronic architecture)
 mix_folders = [
     "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.25/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.25_HT-1_/NANOAOD/",
     "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.35/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.35_HT-1_/NANOAOD/",
     "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.50/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.50_HT-1_/NANOAOD/",
     "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_0.71/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T0.71_HT-1_/NANOAOD/",
     "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T1.00_HT-1_/NANOAOD/",
+    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_1.41/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T1.41_HT-1_/NANOAOD/",
+    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_2.00/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T2.00_HT-1_/NANOAOD/",
     "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_2.83/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T2.83_HT-1_/NANOAOD/",
-    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_2.0_0.50/UL18/ZHleptonicpythia_leptonic_M125_MD2.0_T0.50_HT-1_/NANOAOD/",
-    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_2.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD2.0_T1.00_HT-1_/NANOAOD/",
-    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_3.0_1.06/UL18/ZHleptonicpythia_leptonic_M125_MD3.0_T1.06_HT-1_/NANOAOD/",
-    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_4.0_1.00/UL18/ZHleptonicpythia_leptonic_M125_MD4.0_T1.00_HT-1_/NANOAOD/",
-    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_6.0_3.00/UL18/ZHleptonicpythia_leptonic_M125_MD6.0_T3.00_HT-1_/NANOAOD/",
-    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_7.0_7.00/UL18/ZHleptonicpythia_leptonic_M125_MD7.0_T7.00_HT-1_/NANOAOD/",
+    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_1.0_4.00/UL18/ZHleptonicpythia_leptonic_M125_MD1.0_T4.00_HT-1_/NANOAOD/",
+    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_2.0_5.66/UL18/ZHleptonicpythia_leptonic_M125_MD2.0_T5.66_HT-1_/NANOAOD/",
     "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_8.0_16.00/UL18/ZHleptonicpythia_leptonic_M125_MD8.0_T16.00_HT-1_/NANOAOD/",
+    "/eos/cms/store/group/phys_exotica/SUEPs/ZH_GenFixed_Samples/2018/Leptonic_8.0_32.00/UL18/ZHleptonicpythia_leptonic_M125_MD8.0_T32.00_HT-1_/NANOAOD/",
 ]
 
 # Generic
